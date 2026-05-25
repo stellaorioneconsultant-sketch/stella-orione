@@ -9,6 +9,7 @@ export default async function handler(req, res) {
     });
     const meData = await meRes.json();
     const userUri = meData.resource?.uri;
+    if (!userUri) { res.status(500).json({ error: 'userUri non trovato', meData }); return; }
     const from = new Date(); from.setDate(from.getDate() - 30);
     const to = new Date(); to.setDate(to.getDate() + 60);
     const url = `https://api.calendly.com/scheduled_events?user=${encodeURIComponent(userUri)}&min_start_time=${from.toISOString()}&max_start_time=${to.toISOString()}&count=50&status=active`;
