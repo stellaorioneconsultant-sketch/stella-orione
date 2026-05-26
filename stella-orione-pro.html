@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stella Orione — Gestionale Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --lilla:#C8B4E8;--lilla-soft:#EDE3F8;--lilla-deep:#9B7EC8;
+  --azzurro:#A8D4F0;--azzurro-soft:#DFF0FA;--azzurro-deep:#5BA3D0;
+  --viola:#7B4FA6;--viola-soft:#D6C2ED;--viola-deep:#4E2A72;
+  --fuxia:#E87AB8;--fuxia-soft:#FAD9EE;--fuxia-deep:#C04A8A;
+  --oro:#D4A843;--oro-soft:#F5E8C0;--oro-pale:#FDF6E3;
+  --bianco:#FEFCFF;--nero:#1A0F2E;
+  --bg:#F8F4FF;--surface:#FFFFFF;--border:#E2D5F5;
+  --text:#2A1A4E;--muted:#8B7AAB;--shadow:rgba(123,79,166,0.12);
+}
+body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;font-size:12px;line-height:1.5}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--lilla-soft)}
+::-webkit-scrollbar-thumb{background:var(--lilla-deep);border-radius:4px}
+
+header{
+  background:linear-gradient(135deg,var(--viola-deep) 0%,var(--viola) 55%,var(--lilla-deep) 100%);
+  padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 4px 20px var(--shadow);position:sticky;top:0;z-index:100;
+}
+.logo-area{display:flex;align-items:center;gap:12px}
+.logo-star{width:34px;height:34px;background:rgba(212,168,67,0.2);border:1px solid rgba(212,168,67,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px}
+.logo-text{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:300;font-style:italic;color:var(--oro-soft);letter-spacing:.08em}
+.logo-sub{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(237,227,248,.55);margin-top:-1px}
+.header-date{font-size:10px;color:rgba(237,227,248,.45);letter-spacing:.08em}
+
+nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto;box-shadow:0 2px 10px var(--shadow);padding:0 1rem}
+.nav-btn{background:none;border:none;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding:.85rem 1.1rem;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.nav-btn:hover{color:var(--viola)}
+.nav-btn.active{color:var(--viola);border-bottom-color:var(--viola)}
+.ndot{width:6px;height:6px;border-radius:50%;background:var(--lilla);flex-shrink:0}
+.nav-btn.active .ndot{background:var(--viola)}
+
+.panel{display:none;padding:1.5rem 2rem;animation:fadeUp .3s ease}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.sec-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:8px}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;font-style:italic;color:var(--viola)}
+.sec-sub{font-size:9px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-top:1px}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.6rem}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;box-shadow:0 2px 8px var(--shadow);transition:transform .15s}
+.sc:hover{transform:translateY(-1px)}
+.sl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.sv{font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:400;line-height:1}
+.sv-v{color:var(--viola)}.sv-f{color:var(--fuxia-deep)}.sv-a{color:var(--azzurro-deep)}.sv-o{color:var(--oro)}.sv-g{color:#4A9E6B}.sv-r{color:#C0392B}
+
+.fc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.3rem;margin-bottom:1.6rem;box-shadow:0 2px 10px var(--shadow)}
+.fc-title{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.9rem;display:flex;align-items:center;gap:7px}
+.fc-title::before{content:'';width:14px;height:1px;background:var(--lilla-deep)}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:9px;margin-bottom:.9rem}
+lbl{display:flex;flex-direction:column;gap:3px}
+lbl span{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+input,select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:7px 9px;outline:none;transition:all .2s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--lilla-deep);background:var(--surface);box-shadow:0 0 0 3px rgba(200,180,232,.18)}
+select option{background:var(--surface)}
+textarea{resize:vertical;min-height:55px}
+
+.btn{background:var(--viola);color:white;border:none;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:9px 17px;border-radius:7px;transition:all .2s}
+.btn:hover{background:var(--viola-deep);transform:translateY(-1px);box-shadow:0 4px 12px rgba(123,79,166,.28)}
+.btn-fx{background:var(--fuxia-deep)}.btn-fx:hover{background:#a03878}
+.btn-az{background:var(--azzurro-deep)}.btn-az:hover{background:#3f85b0}
+.btn-ghost{background:transparent;color:var(--viola);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--viola);background:var(--lilla-soft);transform:none;box-shadow:none}
+.btn-sm{padding:5px 11px;font-size:9px}
+.btn-del{background:transparent;color:#C0392B;border:1px solid rgba(192,57,43,.22);padding:4px 8px;font-size:9px}.btn-del:hover{background:rgba(192,57,43,.07);transform:none;box-shadow:none}
+
+.tw{overflow-x:auto;border-radius:12px;border:1px solid var(--border);box-shadow:0 2px 10px var(--shadow)}
+table{width:100%;border-collapse:collapse;background:var(--surface)}
+thead tr{background:linear-gradient(135deg,var(--lilla-soft),var(--azzurro-soft))}
+th{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--viola);padding:9px 11px;text-align:left;white-space:nowrap;font-weight:400}
+tbody tr{border-top:1px solid var(--border);transition:background .15s}
+tbody tr:hover{background:var(--lilla-soft)}
+td{padding:9px 11px;color:var(--text);font-size:11px;vertical-align:middle}
+td.m{color:var(--muted)}
+td.hl{color:var(--viola);font-weight:500}
+td.go{color:var(--oro);font-weight:500}
+
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;letter-spacing:.09em;text-transform:uppercase;padding:2px 8px;border-radius:20px;font-weight:400;white-space:nowrap}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.b-attivo{background:rgba(74,158,107,.11);color:#4A9E6B;border:1px solid rgba(74,158,107,.28)}
+.b-inattivo{background:var(--lilla-soft);color:var(--muted);border:1px solid var(--border)}
+.b-nuovo{background:var(--fuxia-soft);color:var(--fuxia-deep);border:1px solid rgba(232,122,184,.28)}
+.b-vip{background:var(--oro-soft);color:var(--oro);border:1px solid rgba(212,168,67,.28)}
+.b-pagato{background:rgba(74,158,107,.11);color:#4A9E6B;border:1px solid rgba(74,158,107,.28)}
+.b-attesa{background:var(--oro-soft);color:var(--oro);border:1px solid rgba(212,168,67,.28)}
+.b-parziale{background:var(--azzurro-soft);color:var(--azzurro-deep);border:1px solid rgba(91,163,208,.28)}
+.b-pub{background:rgba(74,158,107,.11);color:#4A9E6B;border:1px solid rgba(74,158,107,.28)}
+.b-prog{background:var(--azzurro-soft);color:var(--azzurro-deep);border:1px solid rgba(91,163,208,.28)}
+.b-bozza{background:var(--lilla-soft);color:var(--muted);border:1px solid var(--border)}
+.b-ig{background:var(--fuxia-soft);color:var(--fuxia-deep);border:1px solid rgba(232,122,184,.28)}
+.b-tk{background:var(--azzurro-soft);color:var(--azzurro-deep);border:1px solid rgba(91,163,208,.28)}
+.b-ent{background:var(--viola-soft);color:var(--viola);border:1px solid rgba(123,79,166,.28)}
+.b-si{background:rgba(74,158,107,.11);color:#4A9E6B;border:1px solid rgba(74,158,107,.28)}
+.b-no{background:rgba(192,57,43,.09);color:#C0392B;border:1px solid rgba(192,57,43,.22)}
+.b-forse{background:var(--azzurro-soft);color:var(--azzurro-deep);border:1px solid rgba(91,163,208,.28)}
+
+.empty-st{text-align:center;padding:2.5rem 1rem;color:var(--muted);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem}
+.empty-st::before{content:'✦';display:block;font-size:1.3rem;color:var(--lilla);margin-bottom:7px;font-style:normal}
+
+.mo{display:none;position:fixed;inset:0;background:rgba(26,15,46,.52);z-index:1000;backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.mo.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.8rem;width:min(580px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(26,15,46,.3);animation:mIn .22s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.3rem;padding-bottom:.9rem;border-bottom:1px solid var(--border)}
+.mtitle{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-style:italic;color:var(--viola)}
+.mclose{background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--muted);padding:4px;transition:color .2s}.mclose:hover{color:var(--viola)}
+
+.fp{display:inline-block;font-size:9px;padding:2px 8px;border-radius:12px;letter-spacing:.07em;text-transform:uppercase}
+.fp-ig{background:var(--fuxia-soft);color:var(--fuxia-deep)}
+.fp-tk{background:var(--azzurro-soft);color:var(--azzurro-deep)}
+.fp-wp{background:rgba(74,158,107,.11);color:#4A9E6B}
+.fp-pass{background:var(--oro-soft);color:var(--oro)}
+.fp-altro{background:var(--lilla-soft);color:var(--muted)}
+
+.ib{background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:3px 7px;color:var(--muted);font-size:10px;font-family:'DM Mono',monospace;transition:all .15s}
+.ib:hover{border-color:var(--viola);color:var(--viola);background:var(--lilla-soft)}
+.nt{font-size:10px;color:var(--muted);font-style:italic;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msi{display:inline-block;background:rgba(74,158,107,.11);color:#4A9E6B;border:1px solid rgba(74,158,107,.28);border-radius:20px;font-size:9px;padding:2px 7px}
+.mno{display:inline-block;background:var(--fuxia-soft);color:var(--fuxia-deep);border:1px solid rgba(232,122,184,.28);border-radius:20px;font-size:9px;padding:2px 7px}
+
+/* dash card */
+.dc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;box-shadow:0 2px 8px var(--shadow)}
+.dc-title{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem;display:flex;align-items:center;gap:6px}
+.dc-title::before{content:'✦';font-size:8px;color:var(--lilla-deep)}
+.dc-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:11px}
+.dc-row:last-child{border-bottom:none}
+
+@media(max-width:640px){.panel{padding:1rem}header{padding:.9rem 1rem}.fg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <div class="logo-star">✦</div>
+    <div>
+      <div class="logo-text">Stella Orione</div>
+      <div class="logo-sub">Gestionale Pro</div>
+    </div>
+  </div>
+  <div class="header-date" id="hdate"></div>
+</header>
+
+<nav>
+  <button class="nav-btn active" onclick="tab('clienti',this)"><span class="ndot"></span>Clienti</button>
+  <button class="nav-btn" onclick="tab('messaggi',this)"><span class="ndot"></span>Messaggi</button>
+  <button class="nav-btn" onclick="tab('pagamenti',this)"><span class="ndot"></span>Pagamenti</button>
+  <button class="nav-btn" onclick="tab('social',this)"><span class="ndot"></span>Social</button>
+  <button class="nav-btn" onclick="tab('dashboard',this)"><span class="ndot"></span>Riepilogo</button>
+</nav>
+
+<!-- CLIENTI -->
+<div id="p-clienti" class="panel active">
+  <div class="sec-hdr">
+    <div><div class="sec-title">Registro Clienti</div><div class="sec-sub">scheda completa · fonte · storico sessioni</div></div>
+    <button class="btn btn-fx btn-sm" onclick="openM('m-cliente')">+ Nuovo cliente</button>
+  </div>
+  <div class="stats">
+    <div class="sc"><div class="sl">Totale</div><div class="sv sv-v" id="sc-tot">0</div></div>
+    <div class="sc"><div class="sl">Attivi</div><div class="sv sv-g" id="sc-att">0</div></div>
+    <div class="sc"><div class="sl">Nuovi 30gg</div><div class="sv sv-f" id="sc-new">0</div></div>
+    <div class="sc"><div class="sl">VIP</div><div class="sv sv-o" id="sc-vip">0</div></div>
+    <div class="sc"><div class="sl">Sessioni tot.</div><div class="sv sv-a" id="sc-ses">0</div></div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Nome</th><th>Contatti</th><th>Social</th><th>Fonte</th><th>Consulenza</th><th>Prima sess.</th><th>Ultima sess.</th><th>Sessioni</th><th>Stato</th><th>Cat.</th><th>Note private</th><th></th></tr></thead>
+    <tbody id="tb-clienti"></tbody>
+  </table><div id="em-clienti" class="empty-st">Aggiungi il tuo primo cliente.</div></div>
+</div>
+
+<!-- MESSAGGI -->
+<div id="p-messaggi" class="panel">
+  <div class="sec-hdr">
+    <div><div class="sec-title">Tracker Messaggi</div><div class="sec-sub">chi scrive · risposta · conversione a cliente</div></div>
+    <button class="btn btn-sm" onclick="openM('m-msg')">+ Nuovo</button>
+  </div>
+  <div class="stats">
+    <div class="sc"><div class="sl">Totale</div><div class="sv sv-v" id="sm-tot">0</div></div>
+    <div class="sc"><div class="sl">Da rispondere</div><div class="sv sv-r" id="sm-no">0</div></div>
+    <div class="sc"><div class="sl">Risposti</div><div class="sv sv-g" id="sm-si">0</div></div>
+    <div class="sc"><div class="sl">→ Clienti</div><div class="sv sv-f" id="sm-cv">0</div></div>
+    <div class="sc"><div class="sl">In trattativa</div><div class="sv sv-a" id="sm-tr">0</div></div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Data</th><th>Nome / Account</th><th>Piattaforma</th><th>Tipo richiesta</th><th>Risposto?</th><th>Data risposta</th><th>Esito</th><th>Note</th><th></th></tr></thead>
+    <tbody id="tb-msg"></tbody>
+  </table><div id="em-msg" class="empty-st">Nessun messaggio registrato.</div></div>
+</div>
+
+<!-- PAGAMENTI -->
+<div id="p-pagamenti" class="panel">
+  <div class="sec-hdr">
+    <div><div class="sec-title">Tracker Pagamenti</div><div class="sec-sub">entrate · acconti · sospesi · metodo</div></div>
+    <button class="btn btn-az btn-sm" onclick="openM('m-pag')">+ Nuovo</button>
+  </div>
+  <div class="stats">
+    <div class="sc"><div class="sl">Incassato</div><div class="sv sv-g" id="sp-inc">€ 0</div></div>
+    <div class="sc"><div class="sl">In attesa</div><div class="sv sv-o" id="sp-att">€ 0</div></div>
+    <div class="sc"><div class="sl">Parziali</div><div class="sv sv-a" id="sp-par">€ 0</div></div>
+    <div class="sc"><div class="sl">Mese corrente</div><div class="sv sv-f" id="sp-mes">€ 0</div></div>
+    <div class="sc"><div class="sl">N° pagamenti</div><div class="sv sv-v" id="sp-n">0</div></div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Data</th><th>Cliente</th><th>Servizio</th><th>Totale</th><th>Acconto</th><th>Saldo</th><th>Metodo</th><th>Stato</th><th>Rif.</th><th>Note</th><th></th></tr></thead>
+    <tbody id="tb-pag"></tbody>
+  </table><div id="em-pag" class="empty-st">Nessun pagamento registrato.</div></div>
+</div>
+
+<!-- SOCIAL -->
+<div id="p-social" class="panel">
+  <div class="sec-hdr">
+    <div><div class="sec-title">Contenuti Social</div><div class="sec-sub">piano editoriale · performance · metriche</div></div>
+    <button class="btn btn-fx btn-sm" onclick="openM('m-social')">+ Nuovo</button>
+  </div>
+  <div class="stats">
+    <div class="sc"><div class="sl">Totale</div><div class="sv sv-v" id="ss-tot">0</div></div>
+    <div class="sc"><div class="sl">Pubblicati</div><div class="sv sv-g" id="ss-pub">0</div></div>
+    <div class="sc"><div class="sl">Programmati</div><div class="sv sv-a" id="ss-prg">0</div></div>
+    <div class="sc"><div class="sl">Bozze</div><div class="sv sv-f" id="ss-boz">0</div></div>
+    <div class="sc"><div class="sl">❤ Likes medi</div><div class="sv sv-o" id="ss-lk">—</div></div>
+    <div class="sc"><div class="sl">Reach medio</div><div class="sv sv-a" id="ss-rc">—</div></div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Data</th><th>Hook / Titolo</th><th>Piattaforma</th><th>Formato</th><th>Tema</th><th>Stato</th><th>Likes</th><th>Comm.</th><th>Salv.</th><th>Reach</th><th>Link</th><th>Note</th><th></th></tr></thead>
+    <tbody id="tb-social"></tbody>
+  </table><div id="em-social" class="empty-st">Nessun contenuto pianificato.</div></div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="p-dashboard" class="panel">
+  <div class="sec-hdr">
+    <div><div class="sec-title">Riepilogo Generale</div><div class="sec-sub">panoramica live</div></div>
+  </div>
+  <div class="stats" id="d-stats"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-top:.3rem">
+    <div class="dc" id="d-topcli"></div>
+    <div class="dc" id="d-msg"></div>
+    <div class="dc" id="d-cont"></div>
+    <div class="dc" id="d-pagatt"></div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="mo" id="m-cliente">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle">Nuovo Cliente</div><button class="mclose" onclick="closeM('m-cliente')">✕</button></div>
+    <div class="fg">
+      <lbl><span>Nome e Cognome *</span><input id="cl-nome" placeholder="Nome cognome"></lbl>
+      <lbl><span>Email</span><input id="cl-email" type="email" placeholder="email@esempio.it"></lbl>
+      <lbl><span>Telefono / WhatsApp</span><input id="cl-tel" placeholder="+39 …"></lbl>
+      <lbl><span>Instagram @</span><input id="cl-ig" placeholder="@username"></lbl>
+      <lbl><span>TikTok @</span><input id="cl-tk" placeholder="@username"></lbl>
+      <lbl><span>Fonte (da dove arriva)</span><select id="cl-fonte"><option value="">— seleziona —</option><option>Instagram</option><option>TikTok</option><option>WhatsApp</option><option>Passaparola</option><option>Sito web</option><option>Altro</option></select></lbl>
+      <lbl><span>Tipo consulenza</span><select id="cl-tipo"><option value="">— seleziona —</option><option>Cartomanzia</option><option>Numerologia</option><option>Cartomanzia + Numerologia</option><option>Sessione mensile</option><option>Pacchetto</option></select></lbl>
+      <lbl><span>Stato</span><select id="cl-stato"><option value="attivo">Attivo</option><option value="inattivo">Inattivo</option></select></lbl>
+      <lbl><span>Categoria</span><select id="cl-cat"><option value="standard">Standard</option><option value="nuovo">Nuovo</option><option value="vip">VIP</option></select></lbl>
+      <lbl><span>Prima sessione</span><input id="cl-prima" type="date"></lbl>
+    </div>
+    <lbl style="margin-bottom:10px"><span>Note private</span><textarea id="cl-note" placeholder="Note, preferenze, temi trattati, sensibilità…"></textarea></lbl>
+    <button class="btn" onclick="addCliente()">✦ Aggiungi cliente</button>
+  </div>
+</div>
+
+<div class="mo" id="m-msg">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle">Nuovo Messaggio</div><button class="mclose" onclick="closeM('m-msg')">✕</button></div>
+    <div class="fg">
+      <lbl><span>Data ricezione</span><input id="mg-data" type="date"></lbl>
+      <lbl><span>Nome / Account *</span><input id="mg-nome" placeholder="Nome o @username"></lbl>
+      <lbl><span>Piattaforma</span><select id="mg-piatt"><option value="">— seleziona —</option><option>Instagram DM</option><option>TikTok DM</option><option>WhatsApp</option><option>Email</option><option>Commento IG</option><option>Commento TK</option><option>Altro</option></select></lbl>
+      <lbl><span>Tipo richiesta</span><select id="mg-tipo"><option value="">— seleziona —</option><option>Informazioni consulenza</option><option>Preventivo</option><option>Prenotazione</option><option>Domanda generica</option><option>Collaborazione</option><option>Complimento / DM spontaneo</option><option>Altro</option></select></lbl>
+      <lbl><span>Risposto?</span><select id="mg-risp"><option value="no">No — da rispondere</option><option value="si">Sì</option></select></lbl>
+      <lbl><span>Data risposta</span><input id="mg-drp" type="date"></lbl>
+      <lbl><span>Esito / Conversione</span><select id="mg-conv"><option value="no">No</option><option value="si">Sì — diventato cliente</option><option value="forse">In trattativa</option></select></lbl>
+    </div>
+    <lbl style="margin-bottom:10px"><span>Note (tono, contenuto, follow-up…)</span><textarea id="mg-note" placeholder="Di cosa parlava, se segue già il profilo, promemoria…"></textarea></lbl>
+    <button class="btn" onclick="addMsg()">✦ Salva</button>
+  </div>
+</div>
+
+<div class="mo" id="m-pag">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle">Nuovo Pagamento</div><button class="mclose" onclick="closeM('m-pag')">✕</button></div>
+    <div class="fg">
+      <lbl><span>Data</span><input id="pg-data" type="date"></lbl>
+      <lbl><span>Cliente *</span><input id="pg-cli" placeholder="Nome cliente" list="dl-cli"></lbl>
+      <lbl><span>Servizio</span><select id="pg-srv"><option value="">— seleziona —</option><option>Cartomanzia</option><option>Numerologia</option><option>Cartomanzia + Numerologia</option><option>Sessione mensile</option><option>Pacchetto</option><option>Altro</option></select></lbl>
+      <lbl><span>Importo totale (€)</span><input id="pg-imp" type="number" min="0" step="0.01" placeholder="0,00"></lbl>
+      <lbl><span>Acconto ricevuto (€)</span><input id="pg-acc" type="number" min="0" step="0.01" placeholder="0,00"></lbl>
+      <lbl><span>Metodo pagamento</span><select id="pg-met"><option value="">— seleziona —</option><option>PayPal</option><option>Bonifico</option><option>Satispay</option><option>Contanti</option><option>Carte</option><option>Altro</option></select></lbl>
+      <lbl><span>Stato</span><select id="pg-sta"><option value="pagato">Pagato</option><option value="attesa">In attesa</option><option value="parziale">Parziale</option></select></lbl>
+      <lbl><span>Fattura / Rif. n°</span><input id="pg-rif" placeholder="Es. RIC-001"></lbl>
+    </div>
+    <lbl style="margin-bottom:10px"><span>Note</span><textarea id="pg-note" placeholder="Accordi, scadenze, promemoria pagamento…"></textarea></lbl>
+    <button class="btn btn-az" onclick="addPag()">✦ Salva pagamento</button>
+  </div>
+</div>
+
+<div class="mo" id="m-social">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle">Nuovo Contenuto Social</div><button class="mclose" onclick="closeM('m-social')">✕</button></div>
+    <div class="fg">
+      <lbl><span>Data pubblicazione</span><input id="co-data" type="date"></lbl>
+      <lbl><span>Hook / Titolo *</span><input id="co-tit" placeholder="Prima frase del video…"></lbl>
+      <lbl><span>Piattaforma</span><select id="co-pf"><option value="">— seleziona —</option><option>Instagram Reel</option><option>Instagram Post</option><option>Instagram Story</option><option>TikTok</option><option>Entrambe (IG + TK)</option></select></lbl>
+      <lbl><span>Formato</span><select id="co-fmt"><option value="">— seleziona —</option><option>Reel / Video</option><option>Carosello</option><option>Foto singola</option><option>Story</option><option>Live</option></select></lbl>
+      <lbl><span>Tema</span><select id="co-tema"><option value="">— seleziona —</option><option>Luna e cicli lunari</option><option>Cartomanzia</option><option>Numerologia</option><option>Trasformazione</option><option>Forza interiore</option><option>Amore e relazioni</option><option>Spiritualità</option><option>Motivazione</option><option>Behind the scenes</option></select></lbl>
+      <lbl><span>Stato</span><select id="co-sta"><option value="bozza">Bozza</option><option value="programmato">Programmato</option><option value="pubblicato">Pubblicato</option></select></lbl>
+      <lbl><span>Likes</span><input id="co-lk" type="number" min="0" placeholder="0"></lbl>
+      <lbl><span>Commenti</span><input id="co-cm" type="number" min="0" placeholder="0"></lbl>
+      <lbl><span>Salvataggi</span><input id="co-sv" type="number" min="0" placeholder="0"></lbl>
+      <lbl><span>Reach / Visualizzazioni</span><input id="co-rc" type="number" min="0" placeholder="0"></lbl>
+      <lbl><span>Link post</span><input id="co-ln" type="url" placeholder="https://…"></lbl>
+    </div>
+    <lbl style="margin-bottom:10px"><span>Idea caption · hashtag · audio · mood</span><textarea id="co-nt" placeholder="Caption, audio usato, mood del video, hashtag…"></textarea></lbl>
+    <button class="btn btn-fx" onclick="addSocial()">✦ Salva contenuto</button>
+  </div>
+</div>
+
+<datalist id="dl-cli"></datalist>
+
+<script>
+const DB={
+  clienti:JSON.parse(localStorage.getItem('so3_cli')||'[]'),
+  messaggi:JSON.parse(localStorage.getItem('so3_msg')||'[]'),
+  pagamenti:JSON.parse(localStorage.getItem('so3_pag')||'[]'),
+  social:JSON.parse(localStorage.getItem('so3_soc')||'[]'),
+};
+function save(){
+  localStorage.setItem('so3_cli',JSON.stringify(DB.clienti));
+  localStorage.setItem('so3_msg',JSON.stringify(DB.messaggi));
+  localStorage.setItem('so3_pag',JSON.stringify(DB.pagamenti));
+  localStorage.setItem('so3_soc',JSON.stringify(DB.social));
+}
+
+const today=new Date().toISOString().split('T')[0];
+document.getElementById('hdate').textContent=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+['mg-data','pg-data','co-data'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today});
+
+function tab(t,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+t).classList.add('active');
+  btn.classList.add('active');
+  if(t==='dashboard')rDash();
+}
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.mo').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open')}));
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
+function fmt(v){return v?new Date(v+' ').toLocaleDateString('it-IT'):'—'}
+function fmtE(v){return v!=null&&!isNaN(v)?'€ '+parseFloat(v).toFixed(2):'—'}
+function nt(v){return`<span class="nt" title="${(v||'').replace(/"/g,'')}">${v||'—'}</span>`}
+
+function fontePill(f){
+  const m={Instagram:'ig',TikTok:'tk',WhatsApp:'wp',Passaparola:'pass'};
+  return f?`<span class="fp fp-${m[f]||'altro'}">${f}</span>`:'<span class="m">—</span>';
+}
+function bmap(v,m){return m[v]?`<span class="badge ${m[v]}">${v}</span>`:`<span class="m">${v||'—'}</span>`}
+
+// CLIENTI
+function addCliente(){
+  const n=document.getElementById('cl-nome').value.trim();
+  if(!n){alert('Inserisci il nome.');return}
+  DB.clienti.push({id:uid(),nome:n,email:document.getElementById('cl-email').value.trim(),tel:document.getElementById('cl-tel').value.trim(),ig:document.getElementById('cl-ig').value.trim(),tk:document.getElementById('cl-tk').value.trim(),fonte:document.getElementById('cl-fonte').value,tipo:document.getElementById('cl-tipo').value,stato:document.getElementById('cl-stato').value,cat:document.getElementById('cl-cat').value,prima:document.getElementById('cl-prima').value,ultima:'',sessioni:0,note:document.getElementById('cl-note').value.trim(),creato:today});
+  ['cl-nome','cl-email','cl-tel','cl-ig','cl-tk','cl-note'].forEach(i=>document.getElementById(i).value='');
+  save();closeM('m-cliente');rClienti();dlClienti();
+}
+function delCli(id){if(!confirm('Eliminare?'))return;DB.clienti=DB.clienti.filter(c=>c.id!==id);save();rClienti();dlClienti()}
+function addSess(id){const c=DB.clienti.find(x=>x.id===id);if(!c)return;c.sessioni=(c.sessioni||0)+1;c.ultima=today;if(!c.prima)c.prima=today;save();rClienti()}
+function rClienti(){
+  const tb=document.getElementById('tb-clienti');
+  const em=document.getElementById('em-clienti');
+  em.style.display=DB.clienti.length?'none':'block';
+  const ago30=new Date();ago30.setDate(ago30.getDate()-30);
+  tb.innerHTML=DB.clienti.map(c=>{
+    const catM={standard:'',nuovo:'b-nuovo',vip:'b-vip'};
+    const contattiHtml=(c.email?`<span style="font-size:10px">${c.email}</span><br>`:'')+(c.tel?`<span class="m" style="font-size:10px">${c.tel}</span>`:'');
+    const socialHtml=(c.ig?`<span class="fp fp-ig">${c.ig}</span> `:'')+(c.tk?`<span class="fp fp-tk">${c.tk}</span>`:'');
+    return`<tr>
+      <td><strong>${c.nome}</strong></td>
+      <td>${contattiHtml||'<span class="m">—</span>'}</td>
+      <td>${socialHtml||'<span class="m">—</span>'}</td>
+      <td>${fontePill(c.fonte)}</td>
+      <td class="m">${c.tipo||'—'}</td>
+      <td class="m">${fmt(c.prima)}</td>
+      <td class="m">${fmt(c.ultima)}</td>
+      <td><span class="hl">${c.sessioni||0}</span> <button class="ib" onclick="addSess('${c.id}')">+1</button></td>
+      <td>${bmap(c.stato,{attivo:'b-attivo',inattivo:'b-inattivo'})}</td>
+      <td>${c.cat&&c.cat!=='standard'?`<span class="badge ${catM[c.cat]}">${c.cat}</span>`:'<span class="m">—</span>'}</td>
+      <td>${nt(c.note)}</td>
+      <td><button class="btn btn-del" onclick="delCli('${c.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('sc-tot').textContent=DB.clienti.length;
+  document.getElementById('sc-att').textContent=DB.clienti.filter(c=>c.stato==='attivo').length;
+  document.getElementById('sc-new').textContent=DB.clienti.filter(c=>c.creato&&new Date(c.creato+'T00:00:00')>=ago30).length;
+  document.getElementById('sc-vip').textContent=DB.clienti.filter(c=>c.cat==='vip').length;
+  document.getElementById('sc-ses').textContent=DB.clienti.reduce((a,c)=>a+(c.sessioni||0),0);
+}
+
+// MESSAGGI
+function addMsg(){
+  const n=document.getElementById('mg-nome').value.trim();
+  if(!n){alert('Inserisci nome/account.');return}
+  DB.messaggi.push({id:uid(),data:document.getElementById('mg-data').value,nome:n,piatt:document.getElementById('mg-piatt').value,tipo:document.getElementById('mg-tipo').value,risp:document.getElementById('mg-risp').value,drp:document.getElementById('mg-drp').value,conv:document.getElementById('mg-conv').value,note:document.getElementById('mg-note').value.trim()});
+  ['mg-nome','mg-drp','mg-note'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('mg-data').value=today;
+  save();closeM('m-msg');rMsg();
+}
+function delMsg(id){if(!confirm('Eliminare?'))return;DB.messaggi=DB.messaggi.filter(m=>m.id!==id);save();rMsg()}
+function togRisp(id){const m=DB.messaggi.find(x=>x.id===id);if(!m)return;m.risp=m.risp==='si'?'no':'si';if(m.risp==='si'&&!m.drp)m.drp=today;save();rMsg()}
+function rMsg(){
+  const tb=document.getElementById('tb-msg');
+  const em=document.getElementById('em-msg');
+  em.style.display=DB.messaggi.length?'none':'block';
+  const sorted=[...DB.messaggi].sort((a,b)=>b.data.localeCompare(a.data));
+  const pm={Instagram:'ig',TikTok:'tk',WhatsApp:'wp','Instagram DM':'ig','TikTok DM':'tk'};
+  const cm={si:'b-si',no:'b-no',forse:'b-forse'};
+  const convLabel={si:'cliente ✓',no:'no',forse:'trattativa'};
+  tb.innerHTML=sorted.map(m=>`<tr style="${m.risp==='no'?'background:rgba(232,122,184,.035)':''}">
+    <td class="m">${fmt(m.data)}</td>
+    <td><strong>${m.nome}</strong></td>
+    <td>${m.piatt?`<span class="fp fp-${pm[m.piatt]||'altro'}">${m.piatt}</span>`:'—'}</td>
+    <td class="m">${m.tipo||'—'}</td>
+    <td>${m.risp==='si'?'<span class="msi">✓ sì</span>':'<span class="mno">✗ no</span>'} <button class="ib" onclick="togRisp('${m.id}')" style="margin-left:4px">${m.risp==='si'?'↩':'→'}</button></td>
+    <td class="m">${fmt(m.drp)}</td>
+    <td>${m.conv?`<span class="badge ${cm[m.conv]}">${convLabel[m.conv]||m.conv}</span>`:'—'}</td>
+    <td>${nt(m.note)}</td>
+    <td><button class="btn btn-del" onclick="delMsg('${m.id}')">✕</button></td>
+  </tr>`).join('');
+  document.getElementById('sm-tot').textContent=DB.messaggi.length;
+  document.getElementById('sm-no').textContent=DB.messaggi.filter(m=>m.risp==='no').length;
+  document.getElementById('sm-si').textContent=DB.messaggi.filter(m=>m.risp==='si').length;
+  document.getElementById('sm-cv').textContent=DB.messaggi.filter(m=>m.conv==='si').length;
+  document.getElementById('sm-tr').textContent=DB.messaggi.filter(m=>m.conv==='forse').length;
+}
+
+// PAGAMENTI
+function addPag(){
+  const cli=document.getElementById('pg-cli').value.trim();
+  const imp=parseFloat(document.getElementById('pg-imp').value)||0;
+  if(!cli||!imp){alert('Inserisci cliente e importo.');return}
+  const acc=parseFloat(document.getElementById('pg-acc').value)||0;
+  DB.pagamenti.push({id:uid(),data:document.getElementById('pg-data').value,cliente:cli,servizio:document.getElementById('pg-srv').value,importo:imp,acconto:acc,saldo:imp-acc,metodo:document.getElementById('pg-met').value,stato:document.getElementById('pg-sta').value,rif:document.getElementById('pg-rif').value.trim(),note:document.getElementById('pg-note').value.trim()});
+  ['pg-cli','pg-imp','pg-acc','pg-rif','pg-note'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('pg-data').value=today;
+  save();closeM('m-pag');rPag();
+}
+function delPag(id){if(!confirm('Eliminare?'))return;DB.pagamenti=DB.pagamenti.filter(p=>p.id!==id);save();rPag()}
+function rPag(){
+  const tb=document.getElementById('tb-pag');
+  const em=document.getElementById('em-pag');
+  em.style.display=DB.pagamenti.length?'none':'block';
+  const sorted=[...DB.pagamenti].sort((a,b)=>b.data.localeCompare(a.data));
+  const thisM=today.slice(0,7);
+  let inc=0,att=0,par=0,mes=0;
+  tb.innerHTML=sorted.map(p=>{
+    if(p.stato==='pagato'){inc+=p.importo;if(p.data&&p.data.startsWith(thisM))mes+=p.importo}
+    else if(p.stato==='attesa')att+=p.importo;
+    else if(p.stato==='parziale'){par+=p.acconto;if(p.data&&p.data.startsWith(thisM))mes+=p.acconto}
+    const stM={pagato:'b-pagato',attesa:'b-attesa',parziale:'b-parziale'};
+    const saldoStyle=p.saldo>0?'style="color:#C0392B"':'';
+    return`<tr>
+      <td class="m">${fmt(p.data)}</td>
+      <td><strong>${p.cliente}</strong></td>
+      <td class="m">${p.servizio||'—'}</td>
+      <td class="go">${fmtE(p.importo)}</td>
+      <td class="m">${p.acconto?fmtE(p.acconto):'—'}</td>
+      <td ${saldoStyle}>${p.saldo>0?fmtE(p.saldo):'<span style="color:#4A9E6B">✓</span>'}</td>
+      <td class="m">${p.metodo||'—'}</td>
+      <td>${bmap(p.stato,stM)}</td>
+      <td class="m" style="font-size:10px">${p.rif||'—'}</td>
+      <td>${nt(p.note)}</td>
+      <td><button class="btn btn-del" onclick="delPag('${p.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('sp-inc').textContent='€ '+inc.toFixed(2);
+  document.getElementById('sp-att').textContent='€ '+att.toFixed(2);
+  document.getElementById('sp-par').textContent='€ '+par.toFixed(2);
+  document.getElementById('sp-mes').textContent='€ '+mes.toFixed(2);
+  document.getElementById('sp-n').textContent=DB.pagamenti.length;
+}
+
+// SOCIAL
+function addSocial(){
+  const t=document.getElementById('co-tit').value.trim();
+  if(!t){alert('Inserisci il titolo/hook.');return}
+  DB.social.push({id:uid(),data:document.getElementById('co-data').value,titolo:t,piatt:document.getElementById('co-pf').value,formato:document.getElementById('co-fmt').value,tema:document.getElementById('co-tema').value,stato:document.getElementById('co-sta').value,likes:parseInt(document.getElementById('co-lk').value)||0,commenti:parseInt(document.getElementById('co-cm').value)||0,salvataggi:parseInt(document.getElementById('co-sv').value)||0,reach:parseInt(document.getElementById('co-rc').value)||0,link:document.getElementById('co-ln').value.trim(),note:document.getElementById('co-nt').value.trim()});
+  ['co-tit','co-lk','co-cm','co-sv','co-rc','co-ln','co-nt'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('co-data').value=today;
+  save();closeM('m-social');rSocial();
+}
+function delSoc(id){if(!confirm('Eliminare?'))return;DB.social=DB.social.filter(c=>c.id!==id);save();rSocial()}
+function rSocial(){
+  const tb=document.getElementById('tb-social');
+  const em=document.getElementById('em-social');
+  em.style.display=DB.social.length?'none':'block';
+  const sorted=[...DB.social].sort((a,b)=>b.data.localeCompare(a.data));
+  const pm={'Instagram Reel':'ig','Instagram Post':'ig','Instagram Story':'ig','TikTok':'tk','Entrambe (IG + TK)':'ent'};
+  const stM={pubblicato:'b-pub',programmato:'b-prog',bozza:'b-bozza'};
+  tb.innerHTML=sorted.map(c=>`<tr>
+    <td class="m">${fmt(c.data)}</td>
+    <td style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.titolo}"><strong>${c.titolo}</strong></td>
+    <td>${c.piatt?`<span class="badge b-${pm[c.piatt]||'bozza'}">${c.piatt}</span>`:'—'}</td>
+    <td class="m">${c.formato||'—'}</td>
+    <td class="m">${c.tema||'—'}</td>
+    <td>${bmap(c.stato,stM)}</td>
+    <td>${c.likes?`<span class="hl">${c.likes.toLocaleString('it-IT')}</span>`:'<span class="m">—</span>'}</td>
+    <td class="m">${c.commenti||'—'}</td>
+    <td class="m">${c.salvataggi||'—'}</td>
+    <td class="m">${c.reach?c.reach.toLocaleString('it-IT'):'—'}</td>
+    <td>${c.link?`<a href="${c.link}" target="_blank" style="color:var(--lilla-deep);font-size:10px;text-decoration:none">↗ link</a>`:'—'}</td>
+    <td>${nt(c.note)}</td>
+    <td><button class="btn btn-del" onclick="delSoc('${c.id}')">✕</button></td>
+  </tr>`).join('');
+  const pub=DB.social.filter(c=>c.stato==='pubblicato');
+  const avgL=pub.length?Math.round(pub.reduce((a,c)=>a+c.likes,0)/pub.length):0;
+  const avgR=pub.length?Math.round(pub.reduce((a,c)=>a+c.reach,0)/pub.length):0;
+  document.getElementById('ss-tot').textContent=DB.social.length;
+  document.getElementById('ss-pub').textContent=pub.length;
+  document.getElementById('ss-prg').textContent=DB.social.filter(c=>c.stato==='programmato').length;
+  document.getElementById('ss-boz').textContent=DB.social.filter(c=>c.stato==='bozza').length;
+  document.getElementById('ss-lk').textContent=pub.length?avgL.toLocaleString('it-IT'):'—';
+  document.getElementById('ss-rc').textContent=pub.length?avgR.toLocaleString('it-IT'):'—';
+}
+
+// DASHBOARD
+function rDash(){
+  const inc=DB.pagamenti.filter(p=>p.stato==='pagato').reduce((a,p)=>a+p.importo,0);
+  const att=DB.pagamenti.filter(p=>p.stato==='attesa').reduce((a,p)=>a+p.importo,0);
+  const noR=DB.messaggi.filter(m=>m.risp==='no');
+  const topC=[...DB.clienti].sort((a,b)=>(b.sessioni||0)-(a.sessioni||0)).slice(0,5);
+  const prossCont=DB.social.filter(c=>c.stato==='programmato'&&c.data>=today).sort((a,b)=>a.data.localeCompare(b.data)).slice(0,4);
+  const pagAtt=DB.pagamenti.filter(p=>p.stato==='attesa').slice(0,5);
+  document.getElementById('d-stats').innerHTML=`
+    <div class="sc"><div class="sl">Clienti attivi</div><div class="sv sv-v">${DB.clienti.filter(c=>c.stato==='attivo').length}</div></div>
+    <div class="sc"><div class="sl">Incassato tot.</div><div class="sv sv-g">€ ${inc.toFixed(2)}</div></div>
+    <div class="sc"><div class="sl">Da incassare</div><div class="sv sv-o">€ ${att.toFixed(2)}</div></div>
+    <div class="sc"><div class="sl">Msg da rispondere</div><div class="sv sv-r">${noR.length}</div></div>
+    <div class="sc"><div class="sl">Contenuti pubbl.</div><div class="sv sv-f">${DB.social.filter(c=>c.stato==='pubblicato').length}</div></div>
+    <div class="sc"><div class="sl">Conversioni msg</div><div class="sv sv-a">${DB.messaggi.filter(m=>m.conv==='si').length}</div></div>
+  `;
+  const rows=(arr,fn)=>arr.length?arr.map(fn).join(''):`<div class="dc-row"><span style="color:#4A9E6B;font-size:11px">✓ Tutto a posto</span></div>`;
+  document.getElementById('d-topcli').innerHTML=`<div class="dc-title">Top clienti per sessioni</div>`+rows(topC,c=>`<div class="dc-row"><span>${c.nome}</span><span class="hl">${c.sessioni||0} sess.</span></div>`);
+  document.getElementById('d-msg').innerHTML=`<div class="dc-title">Messaggi da rispondere</div>`+rows(noR.slice(0,5),m=>`<div class="dc-row"><span>${m.nome} <span class="m">(${m.piatt||'?'})</span></span><span class="mno">✗</span></div>`);
+  document.getElementById('d-cont').innerHTML=`<div class="dc-title">Prossimi contenuti</div>`+rows(prossCont,c=>`<div class="dc-row"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">${c.titolo}</span><span class="m">${fmt(c.data)}</span></div>`);
+  document.getElementById('d-pagatt').innerHTML=`<div class="dc-title">Pagamenti in attesa</div>`+rows(pagAtt,p=>`<div class="dc-row"><span>${p.cliente}</span><span class="go">${fmtE(p.importo)}</span></div>`);
+}
+
+function dlClienti(){
+  document.getElementById('dl-cli').innerHTML=DB.clienti.map(c=>`<option value="${c.nome}">`).join('');
+}
+
+rClienti();rMsg();rPag();rSocial();dlClienti();
+</script>
+</body>
+</html>
