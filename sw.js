@@ -1,19 +1,7 @@
-// Versione 10 - reset cache completo
-const CACHE = 'stella-orione-v10';
-
-self.addEventListener('install', e => {
-  self.skipWaiting();
-});
-
+const CACHE = 'so-v10';
+self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.map(k => caches.delete(k)))
-    )
-  );
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))));
   self.clients.claim();
 });
-
-self.addEventListener('fetch', e => {
-  e.respondWith(fetch(e.request));
-});
+self.addEventListener('fetch', e => { e.respondWith(fetch(e.request)); });
